@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ערד · ניהול משימות מבצעיות</title>
+    <meta name="description" content="תצוגה מקומית של מאגר משימות ופעולות לאירוע, בלי שרת ובלי מאגר נתונים" />
+    <link rel="icon" href="icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <aside>
+        <div class="brand">
+          <div class="brand-title">ערד</div>
+          <p class="muted">ניהול משימות מבצעיות</p>
+        </div>
+        <nav>
+          <a data-nav="dashboard" href="#/">לוח בקרה</a>
+          <a data-nav="events" href="#/events">אירועים</a>
+          <a data-nav="templates" href="#/templates">מאגר משימות</a>
+        </nav>
+        <p class="aside-note">תצוגה מקומית בלבד. הקובץ נפתח בדפדפן בלי שרת ובלי מאגר נתונים.</p>
+      </aside>
+      <main id="view"></main>
+    </div>
+    <script src="demo.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

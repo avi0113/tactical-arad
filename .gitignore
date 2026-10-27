@@ -1,8 +1,4 @@
 node_modules
 .next
-.env
-.env.local
-.env.*.local
-*.log
 .DS_Store
-tsconfig.tsbuildinfo
+*.log
