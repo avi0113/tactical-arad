@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Frank_Ruhl_Libre, Heebo } from "next/font/google";
 import { AppShell } from "@/components/AppShell";
-import { OpsProvider } from "@/components/OpsProvider";
 import "./globals.css";
 
 const heebo = Heebo({
@@ -19,16 +18,14 @@ const frank = Frank_Ruhl_Libre({
 
 export const metadata: Metadata = {
   title: "ערד · ניהול משימות מבצעיות",
-  description: "מאגר משימות מוכנות מראש, ורשימת פעולות נדרשות לכל אירוע",
+  description: "תצוגת דוגמה של מאגר משימות ופעולות לאירוע, בלי מאגר נתונים",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="he" dir="rtl" className={`${heebo.variable} ${frank.variable}`}>
       <body className="font-sans antialiased">
-        <OpsProvider>
-          <AppShell>{children}</AppShell>
-        </OpsProvider>
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   );

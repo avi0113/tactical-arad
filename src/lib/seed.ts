@@ -1,4 +1,3 @@
-import { snapshotTemplate } from "./domain";
 import type { ActionStatus, Db, EventAction, EventStatus, OpsEvent, Priority, TaskTemplate } from "./types";
 
 interface TemplateSeed {
@@ -201,6 +200,26 @@ function makeEvent(
   return { id, actions: [], ...fields };
 }
 
+function copyTemplate(template: TaskTemplate, order: number, now: string, makeId: () => string): EventAction {
+  return {
+    id: makeId(),
+    templateId: template.id,
+    title: template.title,
+    description: template.description,
+    category: template.category,
+    priority: template.priority,
+    status: "pending",
+    assignee: template.defaultRole,
+    estimatedMinutes: template.estimatedMinutes,
+    steps: template.steps.map((text) => ({ id: makeId(), text, done: false })),
+    notes: "",
+    order,
+    createdAt: now,
+    updatedAt: now,
+    completedAt: null,
+  };
+}
+
 function addAction(
   templates: TaskTemplate[],
   event: OpsEvent,
@@ -211,7 +230,7 @@ function addAction(
 ) {
   const template = templates.find((item) => item.id === templateId);
   if (!template) throw new Error(`missing template ${templateId}`);
-  const action = snapshotTemplate(template, event.actions.length, now, nextId);
+  const action = copyTemplate(template, event.actions.length, now, nextId);
   tweak?.(action);
   event.actions.push(action);
 }
@@ -315,3 +334,5 @@ export function createSeed(base = new Date()): Db {
 
   return { templates, events: [fire, hazmat, drill] };
 }
+
+export const demo = createSeed(new Date("2026-10-27T12:00:00.000Z"));

@@ -63,36 +63,3 @@ export interface Db {
   templates: TaskTemplate[];
   events: OpsEvent[];
 }
-
-export interface TemplateInput {
-  title: string;
-  description: string;
-  category: string;
-  priority: Priority;
-  estimatedMinutes: number | null;
-  defaultRole: string;
-  steps: string[];
-}
-
-export interface EventInput {
-  title: string;
-  description: string;
-  eventType: string;
-  status: EventStatus;
-  severity: Priority;
-  location: string;
-  commander: string;
-  startedAt: string;
-}
-
-export interface ActionInput {
-  title: string;
-  description: string;
-  category: string;
-  priority: Priority;
-  status: ActionStatus;
-  assignee: string;
-  estimatedMinutes: number | null;
-  steps: ActionStep[];
-  notes: string;
-}
