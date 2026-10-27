@@ -43,7 +43,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           })}
         </nav>
         <p className="mt-6 hidden text-xs leading-5 text-ink-500 md:block">
-          משימה במאגר ופעולה באירוע הן רשומות נפרדות. עריכה של אחת לא משנה את השנייה.
+          משימה במאגר ופעולה באירוע הן רשומות נפרדות. עריכה של אחת לא משנה את השנייה. השמירה מתבצעת ברשימות SharePoint.
         </p>
         <button
           type="button"
@@ -68,7 +68,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {resetOpen ? (
         <ConfirmDialog
           title="שחזור נתוני דוגמה"
-          body="הפעולה תמחק את האירועים ואת המשימות שנשמרו במערכת הזו, ותחזיר את המאגר ואת האירועים לדוגמה."
+          body="הפעולה תמחק את האירועים ואת המשימות ברשימות SharePoint, ותחזיר את נתוני הדוגמה."
           confirmLabel="שחזור"
           onClose={() => setResetOpen(false)}
           onConfirm={() => {

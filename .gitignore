@@ -1,7 +1,8 @@
 node_modules
 .next
-data/db.json
-data/*.tmp
+.env
+.env.local
+.env.*.local
 *.log
 .DS_Store
 tsconfig.tsbuildinfo

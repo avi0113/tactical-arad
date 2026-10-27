@@ -1,13 +1,11 @@
-import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
-import path from "node:path";
-import { DomainError } from "./domain";
+import { createGraphClient } from "./sharepoint/graph";
+import { loadSharePointSettings } from "./sharepoint/config";
+import { createSharePointRepository, type DataRepository } from "./sharepoint/repository";
 import { createSeed } from "./seed";
 import type { Db } from "./types";
 
-function dbFile(): string {
-  return process.env.OPS_DB_PATH ?? path.join(process.cwd(), "data", "db.json");
-}
-
+let override: DataRepository | null = null;
+let cached: DataRepository | null = null;
 let queue: Promise<void> = Promise.resolve();
 
 function withLock<T>(fn: () => Promise<T>): Promise<T> {
@@ -19,52 +17,34 @@ function withLock<T>(fn: () => Promise<T>): Promise<T> {
   return run;
 }
 
-function isDb(value: unknown): value is Db {
-  if (!value || typeof value !== "object") return false;
-  const record = value as Partial<Db>;
-  return Array.isArray(record.templates) && Array.isArray(record.events);
+export function useRepository(repository: DataRepository | null) {
+  override = repository;
+  if (repository) cached = null;
 }
 
-async function persist(db: Db): Promise<void> {
-  const file = dbFile();
-  await mkdir(path.dirname(file), { recursive: true });
-  const tmp = `${file}.tmp`;
-  await writeFile(tmp, JSON.stringify(db, null, 2), "utf8");
-  await rename(tmp, file);
-}
-
-async function loadOrSeed(): Promise<Db> {
-  const file = dbFile();
-  let raw: string;
-  try {
-    raw = await readFile(file, "utf8");
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === "ENOENT") {
-      const seeded = createSeed();
-      await persist(seeded);
-      return seeded;
-    }
-    throw error;
+function repository(): DataRepository {
+  if (override) return override;
+  if (!cached) {
+    const settings = loadSharePointSettings();
+    cached = createSharePointRepository(createGraphClient(settings.auth), {
+      siteId: settings.siteId,
+      siteUrl: settings.siteUrl,
+      lists: settings.lists,
+    });
   }
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(raw);
-  } catch {
-    throw new DomainError("קובץ הנתונים פגום", 500);
-  }
-  if (!isDb(parsed)) throw new DomainError("קובץ הנתונים פגום", 500);
-  return parsed;
+  return cached;
 }
 
 export function readDb(): Promise<Db> {
-  return withLock(async () => structuredClone(await loadOrSeed()));
+  return withLock(async () => structuredClone(await repository().read()));
 }
 
 export function updateDb<T>(fn: (db: Db) => T): Promise<{ db: Db; value: T }> {
   return withLock(async () => {
-    const db = await loadOrSeed();
+    const db = await repository().read();
+    const before = structuredClone(db);
     const value = fn(db);
-    await persist(db);
+    await repository().write(before, db);
     return { db: structuredClone(db), value };
   });
 }
